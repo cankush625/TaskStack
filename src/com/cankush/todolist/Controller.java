@@ -1,7 +1,10 @@
 package com.cankush.todolist;
 
 import com.cankush.todolist.datamodel.TodoItem;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextArea;
@@ -17,8 +20,12 @@ public class Controller {
     private ListView<TodoItem> todoListView; // Making todoListView generic
     @FXML
     private TextArea itemDetailsTextArea;
+    @FXML
+    private Label deadLineLabel;
 
-    //Initializing with some data
+    /**
+     * Initializing with some data
+     */
     public void initialize() {
         TodoItem item1 = new TodoItem("Mail birthday card", "Mail a birthday card to Ankush on his 21th birthday",
                 LocalDate.of(2020, Month.FEBRUARY, 16));
@@ -38,23 +45,43 @@ public class Controller {
         todoItems.add(item4);
         todoItems.add(item5);
 
+        // Adding change listener to select the item that is changed
+        todoListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TodoItem>() {
+            @Override
+            public void changed(ObservableValue<? extends TodoItem> observable, TodoItem oldValue, TodoItem newValue) {
+                if (newValue != null) {
+                    TodoItem item = todoListView.getSelectionModel().getSelectedItem();
+                    itemDetailsTextArea.setText(item.getDetails());
+                    deadLineLabel.setText(item.getDeadline().toString());
+                }
+            }
+        });
+
         // Adding the todos present in the todoItems to the todoListView
         todoListView.getItems().setAll(todoItems);
         // By default user can select multiple items at a time
         // To avoid this, making user to select single item at a time
         todoListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+        // Code to always make the first item of the list selected(Default selection)
+        todoListView.getSelectionModel().selectFirst();
     }
 
+    /**
+     * This handleClickListView code is replaced by Overriding the change method in the initialize function
+     * As the generic event handler will trigger whenever the change is occurred
+     */
     public void handleClickListView() {
         TodoItem item = todoListView.getSelectionModel().getSelectedItem();
 //        System.out.println("The selected item is " + item);
-//        itemDetailsTextArea.setText(item.getDetails());
-        //The line no. 51 can be replaced by StringBuilder
-        StringBuilder sb = new StringBuilder(item.getDetails());
-        sb.append("\n\n\n\n");
-        sb.append("Due: ");
-        sb.append(item.getDeadline().toString());
-        itemDetailsTextArea.setText(sb.toString()); // Displaying details on the text area of the window
+        itemDetailsTextArea.setText(item.getDetails());
+        deadLineLabel.setText(item.getDeadline().toString());
+        //The line no. 77 can be replaced by StringBuilder
+//        StringBuilder sb = new StringBuilder(item.getDetails());
+//        sb.append("\n\n\n\n");
+//        sb.append("Due: ");
+//        sb.append(item.getDeadline().toString());
+//        itemDetailsTextArea.setText(sb.toString()); // Displaying details on the text area of the window
     }
 }
 
