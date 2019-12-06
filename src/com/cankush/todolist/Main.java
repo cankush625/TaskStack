@@ -1,10 +1,13 @@
 package com.cankush.todolist;
 
+import com.cankush.todolist.datamodel.TodoData;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class Main extends Application {
 
@@ -19,5 +22,26 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    @Override
+    public void stop() throws Exception {
+        try {
+            // Storing the items to the file/database
+            TodoData.getInstance().storeTodoItems();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    // Every time the application starts this will load the list of todoItems
+    @Override
+    public void init() throws Exception {
+        try {
+            // Loading the items from the file/database at the starting of the application
+            TodoData.getInstance().loadTodoItems();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
