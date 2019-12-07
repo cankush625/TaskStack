@@ -1,20 +1,54 @@
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.GridPane?>
-
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
-<BorderPane fx:controller="com.cankush.todolist.Controller"
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<BorderPane fx:id="mainBorderPane" fx:controller="com.cankush.todolist.Controller"
             xmlns:fx="http://javafx.com/fxml">
+    <!-- Adding a Menu bar for our application-->
+    <top>
+        <MenuBar>
+            <Menu text="File">
+                <items>
+                    <MenuItem text="New..." onAction="#showNewItemDialog"/>
+<!--                    <SeparatorMenuItem/> &lt;!&ndash; Adding the separating line between the two menu items&ndash;&gt;-->
+                    <MenuItem text="Exit"/>
+                </items>
+            </Menu>
+        </MenuBar>
+    </top>
+
+    <!-- List of items are displaying to the left side of the application-->
     <left>
-        <ListView fx:id="todoListView" onMouseClicked="#handleClickListView">
+        <ListView fx:id="todoListView"> <!-- onMouseClick doesn't required because we added generic event handler that will trigger when change occurred-->
 
         </ListView>
     </left>
+
     <!-- We have to use all the remaining space if the window. So, we are adding the center tag-->
     <center>
-        <TextArea fx:id="itemDetailsTextArea"/>
+        <VBox style="-fx-background-color: white">
+            <TextArea fx:id="itemDetailsTextArea" VBox.vgrow="ALWAYS"/> <!-- VBox.vgrow tells the VBox to always give room as much as
+                            possible to the TextArea. It give as much as possible space to the TextArea and minimum space to the
+                            its child that is, in this case HBox which display Due date-->
+            <HBox>
+                <Label text="Due: " style="-fx-background-color: white">
+                    <font>
+                        <Font name="Times New Roman bold" size="24"/>
+                    </font>
+                </Label>
+                <Label fx:id="deadLineLabel" style="-fx-background-color: white">
+                    <font>
+                        <Font name="Times New Roman bold" size="24"/>
+                    </font>
+                </Label>
+            </HBox>
+        </VBox>
     </center>
 </BorderPane>
