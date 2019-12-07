@@ -9,14 +9,14 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
-<BorderPane fx:controller="com.cankush.todolist.Controller"
+<BorderPane fx:id="mainBorderPane" fx:controller="com.cankush.todolist.Controller"
             xmlns:fx="http://javafx.com/fxml">
     <!-- Adding a Menu bar for our application-->
     <top>
         <MenuBar>
             <Menu text="File">
                 <items>
-                    <MenuItem text="New..."/>
+                    <MenuItem text="New..." onAction="#showNewItemDialog"/>
 <!--                    <SeparatorMenuItem/> &lt;!&ndash; Adding the separating line between the two menu items&ndash;&gt;-->
                     <MenuItem text="Exit"/>
                 </items>

@@ -36,10 +36,10 @@ public class TodoData {
         return todoItems;
     }
 
-    // Adding setter for TodoItems
-//    public void setTodoItems(List<TodoItem> todoItems) {
-//        this.todoItems = todoItems;
-//    }
+    // Adding TodoItem to the list of TodoItems
+    public void addTodoItem(TodoItem todoItem) {
+        todoItems.add(todoItem);
+    }
 
     // Loading TodoItems
     // Taking the item from the user and add it to the todoItems list

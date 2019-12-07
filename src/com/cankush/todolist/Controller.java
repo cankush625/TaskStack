@@ -5,16 +5,18 @@ import com.cankush.todolist.datamodel.TodoItem;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TextArea;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Controller {
     private List<TodoItem> todoItems; // Making todoItems generic
@@ -24,32 +26,13 @@ public class Controller {
     private TextArea itemDetailsTextArea;
     @FXML
     private Label deadLineLabel;
+    @FXML
+    private BorderPane mainBorderPane;
 
     /**
      * Initializing with some data
      */
     public void initialize() {
-//        TodoItem item1 = new TodoItem("Mail birthday card", "Mail a birthday card to Ankush on his 21th birthday",
-//                LocalDate.of(2020, Month.FEBRUARY, 16));
-//        TodoItem item2 = new TodoItem("Devfest Event", "Devfest event for developers byb Google in Mumbai",
-//                LocalDate.of(2020, Month.MARCH, 24));
-//        TodoItem item3 = new TodoItem("Application deployment", "Deploy the TodoList app to the production",
-//                LocalDate.of(2020, Month.MAY, 20));
-//        TodoItem item4 = new TodoItem("Renew Passport", "Appointment for renewing passport at 10AM",
-//                LocalDate.of(2020, Month.MAY, 4));
-//        TodoItem item5 = new TodoItem("Finish the UI for WebApp", "Finish the UI of WebApp demanded by Mr. Smith",
-//                LocalDate.of(2020, Month.JULY, 2));
-//
-//        todoItems = new ArrayList<TodoItem>();
-//        todoItems.add(item1);
-//        todoItems.add(item2);
-//        todoItems.add(item3);
-//        todoItems.add(item4);
-//        todoItems.add(item5);
-//
-//        // Setting the data from here to the List in the TodoData file
-//        TodoData.getInstance().setTodoItems(todoItems);
-
         // Adding change listener to select the item that is changed
         todoListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TodoItem>() {
             @Override
@@ -75,20 +58,54 @@ public class Controller {
     }
 
     /**
+     * This showNewItemDialog() method will show the dialog to submit input to create new TodoItem
+     */
+    @FXML
+    public void showNewItemDialog() {
+        // Initializing Dialog of ButtonType
+        Dialog<ButtonType> dialog = new Dialog<>();
+        // Loading FXML here
+        dialog.initOwner(mainBorderPane.getScene().getWindow());
+        // Initializing FXMLLoader
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        // Getting the FXML resource that loads the dialog pop up
+        fxmlLoader.setLocation(getClass().getResource("todoItemDialog.fxml"));
+        try {
+            // Setting the root i.e. todoItemDialog.fxml as a content for dialog by using fxmlLoader
+            dialog.getDialogPane().setContent(fxmlLoader.load());
+        } catch (IOException e) {
+            System.out.println("Couldn't load the dialog");
+            e.printStackTrace();
+            return;
+        }
+        // Adding OK Button
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        // Adding CANCEL Button
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+
+        // Showing which button is pressed in the terminal
+        Optional<ButtonType> result = dialog.showAndWait();
+        // If result is present and the result contains data of ButtonType.OK the print ON pressed else CANCEL pressed
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            // Executing DialogController
+            DialogController controller = fxmlLoader.getController();
+            controller.processResults();
+            System.out.println("OK pressed");
+        } else {
+            System.out.println("CANCEL pressed");
+        }
+    }
+
+    /**
      * This handleClickListView code is replaced by Overriding the change method in the initialize function
      * As the generic event handler will trigger whenever the change is occurred
      */
+    @FXML
     public void handleClickListView() {
         TodoItem item = todoListView.getSelectionModel().getSelectedItem();
 //        System.out.println("The selected item is " + item);
         itemDetailsTextArea.setText(item.getDetails());
         deadLineLabel.setText(item.getDeadline().toString());
-        //The line no. 77 can be replaced by StringBuilder
-//        StringBuilder sb = new StringBuilder(item.getDetails());
-//        sb.append("\n\n\n\n");
-//        sb.append("Due: ");
-//        sb.append(item.getDeadline().toString());
-//        itemDetailsTextArea.setText(sb.toString()); // Displaying details on the text area of the window
     }
 }
 
