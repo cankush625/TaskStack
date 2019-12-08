@@ -6,15 +6,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.Month;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +30,7 @@ public class Controller {
      */
     public void initialize() {
         // Adding change listener to select the item that is changed
+        // Whenever the change is occur this will automatically trigger using change listener
         todoListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TodoItem>() {
             @Override
             public void changed(ObservableValue<? extends TodoItem> observable, TodoItem oldValue, TodoItem newValue) {
@@ -66,6 +63,10 @@ public class Controller {
         Dialog<ButtonType> dialog = new Dialog<>();
         // Loading FXML here
         dialog.initOwner(mainBorderPane.getScene().getWindow());
+        // Adding title for our dialog
+        dialog.setTitle("Add new Todo Item");
+        // Setting the header text for the dialog
+        dialog.setHeaderText("Use this dialog to create a new todo item");
         // Initializing FXMLLoader
         FXMLLoader fxmlLoader = new FXMLLoader();
         // Getting the FXML resource that loads the dialog pop up
@@ -89,9 +90,14 @@ public class Controller {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             // Executing DialogController
             DialogController controller = fxmlLoader.getController();
-            controller.processResults();
+            TodoItem newItem = controller.processResults();
+            // Updating the TodoItem list after adding the new TodoItem
+            todoListView.getItems().setAll(TodoData.getInstance().getTodoItems());
+            // Selecting the newly added TodoItem as the entry made
+            todoListView.getSelectionModel().select(newItem);
             System.out.println("OK pressed");
         } else {
+            // If we pressed any other button instead of the OK button the this will executed
             System.out.println("CANCEL pressed");
         }
     }
