@@ -34,9 +34,10 @@
     <!-- We have to use all the remaining space if the window. So, we are adding the center tag-->
     <center>
         <VBox style="-fx-background-color: white">
-            <TextArea fx:id="itemDetailsTextArea" VBox.vgrow="ALWAYS"/> <!-- VBox.vgrow tells the VBox to always give room as much as
+            <TextArea fx:id="itemDetailsTextArea" VBox.vgrow="ALWAYS" wrapText="true"/> <!-- VBox.vgrow tells the VBox to always give room as much as
                             possible to the TextArea. It give as much as possible space to the TextArea and minimum space to the
-                            its child that is, in this case HBox which display Due date-->
+                            its child that is, in this case HBox which display Due date--><!-- wrapText will add the text to the new
+                            line when the current line of the box size is full-->
             <HBox>
                 <Label text="Due: " style="-fx-background-color: white">
                     <font>

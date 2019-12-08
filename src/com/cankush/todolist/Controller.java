@@ -45,11 +45,10 @@ public class Controller {
         });
 
         // Adding the todos present in the todoItems to the todoListView
-        todoListView.getItems().setAll(TodoData.getInstance().getTodoItems());
+        todoListView.setItems(TodoData.getInstance().getTodoItems());
         // By default user can select multiple items at a time
         // To avoid this, making user to select single item at a time
         todoListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-
         // Code to always make the first item of the list selected(Default selection)
         todoListView.getSelectionModel().selectFirst();
     }
@@ -91,14 +90,8 @@ public class Controller {
             // Executing DialogController
             DialogController controller = fxmlLoader.getController();
             TodoItem newItem = controller.processResults();
-            // Updating the TodoItem list after adding the new TodoItem
-            todoListView.getItems().setAll(TodoData.getInstance().getTodoItems());
             // Selecting the newly added TodoItem as the entry made
             todoListView.getSelectionModel().select(newItem);
-            System.out.println("OK pressed");
-        } else {
-            // If we pressed any other button instead of the OK button the this will executed
-            System.out.println("CANCEL pressed");
         }
     }
 

@@ -1,6 +1,7 @@
 package com.cankush.todolist.datamodel;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -11,14 +12,13 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
-import java.util.List;
 
 public class TodoData {
     // Creating the instance of the class so that making the class Singleton and later declaring constructor as private
     private static TodoData instance = new TodoData();
     private static String filename = "TodoListItems.txt";
 
-    private List<TodoItem> todoItems;
+    private ObservableList<TodoItem> todoItems;
     private DateTimeFormatter formatter;
 
     // Getting the instance
@@ -32,7 +32,7 @@ public class TodoData {
     }
 
     // Adding getter for TodoItems
-    public List<TodoItem> getTodoItems() {
+    public ObservableList<TodoItem> getTodoItems() {
         return todoItems;
     }
 
@@ -60,6 +60,7 @@ public class TodoData {
 
                 LocalDate date = LocalDate.parse(dateString, formatter);
                 TodoItem todoItem = new TodoItem(title, details, date);
+                // Adding todoItem from database/file to the todoItems ObservableList
                 todoItems.add(todoItem);
             }
         } finally {
@@ -74,6 +75,7 @@ public class TodoData {
         Path path = Paths.get(filename);
         BufferedWriter bw = Files.newBufferedWriter(path);
         try {
+            // Initializing iterator
             Iterator<TodoItem> iter = todoItems.iterator();
             while(iter.hasNext()) {
                 TodoItem item = iter.next();
