@@ -30,7 +30,7 @@ public class Controller {
      */
     public void initialize() {
         // Adding change listener to select the item that is changed
-        // Whenever the change is occur this will automatically trigger
+        // Whenever the change is occur this will automatically trigger using change listener
         todoListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TodoItem>() {
             @Override
             public void changed(ObservableValue<? extends TodoItem> observable, TodoItem oldValue, TodoItem newValue) {
