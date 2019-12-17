@@ -8,8 +8,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
+import javafx.util.Callback;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +54,34 @@ public class Controller {
         todoListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         // Code to always make the first item of the list selected(Default selection)
         todoListView.getSelectionModel().selectFirst();
+
+        // Implementing CellFactory
+        todoListView.setCellFactory(new Callback<ListView<TodoItem>, ListCell<TodoItem>>() {
+            @Override
+            public ListCell<TodoItem> call(ListView<TodoItem> param) {
+                ListCell<TodoItem> cell = new ListCell<TodoItem>() {
+
+                    @Override
+                    protected void updateItem(TodoItem item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (empty) {
+                            setText(null);
+                        } else {
+                            setText(item.getTitle());
+                            // If the deadline is today, then the color of the todoItem will turn red
+                            if (item.getDeadline().isBefore(LocalDate.now().plusDays(1))) {
+                                setTextFill(Color.RED);
+                                // If the deadline is tomorrow, then set the color of the todoItem to brown
+                            } else if (item.getDeadline().equals(LocalDate.now().plusDays(1))) {
+                                setTextFill(Color.BROWN);
+                            }
+                        }
+                    }
+                };
+                return cell;
+            }
+        });
     }
 
     /**
