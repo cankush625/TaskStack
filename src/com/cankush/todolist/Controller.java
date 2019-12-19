@@ -4,6 +4,8 @@ import com.cankush.todolist.datamodel.TodoData;
 import com.cankush.todolist.datamodel.TodoItem;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -27,11 +29,27 @@ public class Controller {
     private Label deadLineLabel;
     @FXML
     private BorderPane mainBorderPane;
+    @FXML
+    private ContextMenu listContextMenu;
 
     /**
      * Initializing with some data
      */
     public void initialize() {
+        // initializing context menu list
+        listContextMenu = new ContextMenu();
+        MenuItem deleteMenuItem = new MenuItem("Delete");
+        // Code for deleting the selected item
+        deleteMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                TodoItem item = todoListView.getSelectionModel().getSelectedItem();
+                deleteItem(item);
+            }
+        });
+        // Adding delete option to the context menu
+        listContextMenu.getItems().addAll(deleteMenuItem);
+
         // Adding change listener to select the item that is changed
         // Whenever the change is occur this will automatically trigger using change listener
         todoListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TodoItem>() {
@@ -79,6 +97,16 @@ public class Controller {
                         }
                     }
                 };
+                // Deleting the record
+                cell.emptyProperty().addListener(
+                        (obs, wadEmpty, isNowEmpty) -> {
+                            if (isNowEmpty) {
+                                cell.setContextMenu(null);
+                            } else {
+                                cell.setContextMenu(listContextMenu);
+                            }
+                        });
+
                 return cell;
             }
         });
@@ -136,6 +164,21 @@ public class Controller {
 //        System.out.println("The selected item is " + item);
         itemDetailsTextArea.setText(item.getDetails());
         deadLineLabel.setText(item.getDeadline().toString());
+    }
+
+    /**
+     * Method to delete the selected item
+     */
+    public void deleteItem(TodoItem item) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete Todo Item");
+        alert.setHeaderText("Delete item: " + item.getTitle());
+        alert.setContentText("Are you sure? Press OK to confirm and cancel to back");
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && (result.get() == ButtonType.OK)) {
+            TodoData.getInstance().deleteTodoItem(item);
+        }
     }
 }
 

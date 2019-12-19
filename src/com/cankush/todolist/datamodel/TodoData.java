@@ -91,6 +91,11 @@ public class TodoData {
             }
         }
     }
+
+    // Removing the item / Deleting the item
+    public void deleteTodoItem(TodoItem item) {
+        todoItems.remove(item);
+    }
 }
 
 //by Ankush Chavan
