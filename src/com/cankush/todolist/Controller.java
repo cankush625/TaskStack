@@ -9,6 +9,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
@@ -74,6 +76,7 @@ public class Controller {
         todoListView.getSelectionModel().selectFirst();
 
         // Implementing CellFactory
+        // Setting the different colors to display the items whether deadline is today pr before today or deadline is tomorrow
         todoListView.setCellFactory(new Callback<ListView<TodoItem>, ListCell<TodoItem>>() {
             @Override
             public ListCell<TodoItem> call(ListView<TodoItem> param) {
@@ -164,6 +167,25 @@ public class Controller {
 //        System.out.println("The selected item is " + item);
         itemDetailsTextArea.setText(item.getDetails());
         deadLineLabel.setText(item.getDeadline().toString());
+    }
+
+    /**
+     * Writing a key event for todoListView
+     * When the delete button on keyboard is get pressed then this method is get called and asks to delete the selected item
+     *
+     * @Param keyEvent accepts the key event
+     */
+    @FXML
+    public void handleKeyPressed(KeyEvent keyEvent) {
+        TodoItem selectedItem = todoListView.getSelectionModel().getSelectedItem();
+        // Checking if the item is get selected
+        if (selectedItem != null) {
+            // Checking if the delete is called
+            if (keyEvent.getCode().equals(KeyCode.DELETE)) {
+                // Deleting the item
+                deleteItem(selectedItem);
+            }
+        }
     }
 
     /**
