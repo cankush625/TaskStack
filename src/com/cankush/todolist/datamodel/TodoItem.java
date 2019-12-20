@@ -38,8 +38,13 @@ public class TodoItem {
         this.deadline = deadline;
     }
 
-    @Override
-    public String toString() {
-        return title;
-    }
+    /**
+     * The toString() method is used we are not implementing the cell factory.
+     * But when we used the cell factory, we don't required to override the toString() method
+     * @return
+     */
+//    @Override
+//    public String toString() {
+//        return title;
+//    }
 }
