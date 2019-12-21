@@ -4,6 +4,7 @@ import com.cankush.todolist.datamodel.TodoData;
 import com.cankush.todolist.datamodel.TodoItem;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -18,6 +19,7 @@ import javafx.util.Callback;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +35,8 @@ public class Controller {
     private BorderPane mainBorderPane;
     @FXML
     private ContextMenu listContextMenu;
+    @FXML
+    private ToggleButton filterToggleButton;
 
     /**
      * Initializing with some data
@@ -67,8 +71,20 @@ public class Controller {
             }
         });
 
+        // Sorting the TodoItems list according to the date
+        SortedList<TodoItem> sortedList = new SortedList<TodoItem>(TodoData.getInstance().getTodoItems(),
+                new Comparator<TodoItem>() {
+                    @Override
+                    public int compare(TodoItem o1, TodoItem o2) {
+                        return o1.getDeadline().compareTo(o2.getDeadline());
+                    }
+                });
+
         // Adding the todos present in the todoItems to the todoListView
-        todoListView.setItems(TodoData.getInstance().getTodoItems());
+//        todoListView.setItems(TodoData.getInstance().getTodoItems());
+
+        // Adding the todos using sorted list
+        todoListView.setItems(sortedList);
         // By default user can select multiple items at a time
         // To avoid this, making user to select single item at a time
         todoListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -201,6 +217,10 @@ public class Controller {
         if (result.isPresent() && (result.get() == ButtonType.OK)) {
             TodoData.getInstance().deleteTodoItem(item);
         }
+    }
+
+    public void handleFilterButton() {
+
     }
 }
 
