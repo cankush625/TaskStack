@@ -1,32 +1,48 @@
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SeparatorMenuItem?>
 <BorderPane fx:id="mainBorderPane" fx:controller="com.cankush.todolist.Controller"
             xmlns:fx="http://javafx.com/fxml">
     <!-- Adding a Menu bar for our application-->
     <top>
-        <MenuBar>
-            <Menu text="File">
-                <items>
-                    <MenuItem text="New..." onAction="#showNewItemDialog"/>
-<!--                    <SeparatorMenuItem/> &lt;!&ndash; Adding the separating line between the two menu items&ndash;&gt;-->
-                    <MenuItem text="Exit"/>
-                </items>
-            </Menu>
-        </MenuBar>
+        <VBox>
+            <MenuBar>
+                <Menu text="File">
+                    <items>
+                        <MenuItem text="New..." onAction="#showNewItemDialog"/>
+    <!--                    <SeparatorMenuItem/> &lt;!&ndash; Adding the separating line between the two menu items&ndash;&gt;-->
+                        <MenuItem text="Exit"/>
+                    </items>
+                </Menu>
+            </MenuBar>
+            <ToolBar>
+                <HBox>
+                    <Button onAction="#showNewItemDialog">
+                        <!-- tooltip displays the description of the item when hovered on it-->
+                        <tooltip>
+                            <Tooltip text="Add new Todo Item"/>
+                        </tooltip>
+                        <graphic>
+                            <ImageView>
+                                <Image url="@/toolbarButtonGraphics/general/New24.gif"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <ToggleButton fx:id="filterToggleButton" text="Today's Items" onAction="#handleFilterButton">
+                        <tooltip>
+                            <Tooltip text="Button Down: Show today's items only. Button Up: Show all items"/>
+                        </tooltip>
+                    </ToggleButton>
+                </HBox>
+            </ToolBar>
+        </VBox>
     </top>
 
     <!-- List of items are displaying to the left side of the application-->
     <left>
-        <ListView fx:id="todoListView"> <!-- onMouseClick doesn't required because we added generic event handler that will trigger when change occurred-->
+        <ListView fx:id="todoListView" onKeyPressed="#handleKeyPressed"> <!-- onMouseClick doesn't required because we added generic event handler that will trigger when change occurred-->
 
         </ListView>
     </left>

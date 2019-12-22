@@ -6,5 +6,5 @@ Finish the UI for WebApp	Finish the UI of WebApp demanded by Mr. Smith	02-07-202
 Docker Meetup	Docker meetup and workshop	07-12-2019	
 Flutter Interact	Google's Flutter Interact conference	11-12-2019	
 Google Cloud Community Day, Mumbai	Event organized by GDG Mumbai.	10-12-2019	
-Kubernetes workshop	The most awaited and interesting event to attend and learn	15-12-2019	
 Learn Dart	Start learning dart programming language	11-12-2019	
+Flutter Interact San Francisco	The GDG San Francisco organising the Flutter Interact Viewing Pary from 9:30 AM PST onwards.	17-12-2019	
