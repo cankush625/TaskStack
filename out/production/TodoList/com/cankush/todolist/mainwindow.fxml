@@ -30,11 +30,14 @@
                             </ImageView>
                         </graphic>
                     </Button>
+<<<<<<< HEAD
                     <ToggleButton fx:id="filterToggleButton" text="Today's Items" onAction="#handleFilterButton">
                         <tooltip>
                             <Tooltip text="Button Down: Show today's items only. Button Up: Show all items"/>
                         </tooltip>
                     </ToggleButton>
+=======
+>>>>>>> 5e6314cb8c48209cb76b93fa05f19042456f41c7
                 </HBox>
             </ToolBar>
         </VBox>
