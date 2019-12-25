@@ -1,0 +1,8 @@
+#filterButton {
+    -fx-background-color: SkyBlue;
+    -fx-start-margin: 2px;
+}
+
+#newItemButton {
+    /*-fx-padding: 5vw;*/
+}

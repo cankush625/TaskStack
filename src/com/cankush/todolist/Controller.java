@@ -2,8 +2,10 @@ package com.cankush.todolist;
 
 import com.cankush.todolist.datamodel.TodoData;
 import com.cankush.todolist.datamodel.TodoItem;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -22,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class Controller {
     private List<TodoItem> todoItems; // Making todoItems generic
@@ -37,6 +40,13 @@ public class Controller {
     private ContextMenu listContextMenu;
     @FXML
     private ToggleButton filterToggleButton;
+
+    // Adding filtered list to show the item by applying some criteria
+    private FilteredList<TodoItem> filteredList;
+
+    // Adding predicate instances;
+    private Predicate<TodoItem> wantAllItems;
+    private Predicate<TodoItem> wantTodaysItems;
 
     /**
      * Initializing with some data
@@ -71,8 +81,28 @@ public class Controller {
             }
         });
 
+        // Predicate for all items
+        wantAllItems = new Predicate<TodoItem>() {
+            @Override
+            public boolean test(TodoItem item) {
+                return true;
+            }
+        };
+
+        // Predicate for today's items
+        wantTodaysItems = new Predicate<TodoItem>() {
+            @Override
+            public boolean test(TodoItem item) {
+                return (item.getDeadline().equals(LocalDate.now()));
+            }
+        };
+
+        // Adding code for filteredList
+        filteredList = new FilteredList<TodoItem>(TodoData.getInstance().getTodoItems(), wantAllItems);
+
         // Sorting the TodoItems list according to the date
-        SortedList<TodoItem> sortedList = new SortedList<TodoItem>(TodoData.getInstance().getTodoItems(),
+        // filteredList can be replaced by TodoData.getInstance().getTodoItems() if we are not implementing filteredList
+        SortedList<TodoItem> sortedList = new SortedList<TodoItem>(filteredList,
                 new Comparator<TodoItem>() {
                     @Override
                     public int compare(TodoItem o1, TodoItem o2) {
@@ -219,8 +249,36 @@ public class Controller {
         }
     }
 
+    /**
+     * Method to handle the filter button on main window
+     */
+    @FXML
     public void handleFilterButton() {
+        TodoItem selectedItem = todoListView.getSelectionModel().getSelectedItem();
+        if (filterToggleButton.isSelected()) {
+            // If the deadline for todoItem is today then the todoItem is displayed once button is selected
+            filteredList.setPredicate(wantTodaysItems);
+            if (filteredList.isEmpty()) {
+                itemDetailsTextArea.clear();
+                deadLineLabel.setText("");
+            } else if (filteredList.contains(selectedItem)) {
+                todoListView.getSelectionModel().select(selectedItem);
+            } else {
+                todoListView.getSelectionModel().selectFirst();
+            }
+        } else {
+            // If the button is not selected then showing all the items
+            filteredList.setPredicate(wantAllItems);
+            todoListView.getSelectionModel().select(selectedItem);
+        }
+    }
 
+    /**
+     * Event handler for exit option in file menu
+     */
+    @FXML
+    public void handleExit() {
+        Platform.exit();
     }
 }
 
