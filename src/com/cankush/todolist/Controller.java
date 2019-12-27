@@ -1,9 +1,12 @@
 package com.cankush.todolist;
 
+import com.cankush.todolist.database.MysqlConnect;
 import com.cankush.todolist.datamodel.TodoData;
 import com.cankush.todolist.datamodel.TodoItem;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -17,11 +20,13 @@ import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class Controller {
     private List<TodoItem> todoItems; // Making todoItems generic
@@ -38,6 +43,13 @@ public class Controller {
     @FXML
     private ToggleButton filterToggleButton;
 
+    // Adding filtered list to show the item by applying some criteria
+    private FilteredList<TodoItem> filteredList;
+
+    // Adding predicate instances;
+    private Predicate<TodoItem> wantAllItems;
+    private Predicate<TodoItem> wantTodaysItems;
+
     /**
      * Initializing with some data
      */
@@ -45,17 +57,32 @@ public class Controller {
         // initializing context menu list
         listContextMenu = new ContextMenu();
         MenuItem deleteMenuItem = new MenuItem("Delete");
+        // Adding menu to edit the todoItem
+        MenuItem editMenuItem = new MenuItem("Edit");
         // Code for deleting the selected item
         deleteMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 TodoItem item = todoListView.getSelectionModel().getSelectedItem();
-                deleteItem(item);
+                try {
+                    deleteItem(item);
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        });
+        // Code for editing the selected item
+        editMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                TodoItem item = todoListView.getSelectionModel().getSelectedItem();
+                editItem(item);
             }
         });
         // Adding delete option to the context menu
         listContextMenu.getItems().addAll(deleteMenuItem);
-
+        // Adding edit option to the context menu
+        listContextMenu.getItems().addAll(editMenuItem);
         // Adding change listener to select the item that is changed
         // Whenever the change is occur this will automatically trigger using change listener
         todoListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TodoItem>() {
@@ -71,8 +98,28 @@ public class Controller {
             }
         });
 
+        // Predicate for all items
+        wantAllItems = new Predicate<TodoItem>() {
+            @Override
+            public boolean test(TodoItem item) {
+                return true;
+            }
+        };
+
+        // Predicate for today's items
+        wantTodaysItems = new Predicate<TodoItem>() {
+            @Override
+            public boolean test(TodoItem item) {
+                return (item.getDeadline().equals(LocalDate.now()));
+            }
+        };
+
+        // Adding code for filteredList
+        filteredList = new FilteredList<TodoItem>(TodoData.getInstance().getTodoItems(), wantAllItems);
+
         // Sorting the TodoItems list according to the date
-        SortedList<TodoItem> sortedList = new SortedList<TodoItem>(TodoData.getInstance().getTodoItems(),
+        // filteredList can be replaced by TodoData.getInstance().getTodoItems() if we are not implementing filteredList
+        SortedList<TodoItem> sortedList = new SortedList<TodoItem>(filteredList,
                 new Comparator<TodoItem>() {
                     @Override
                     public int compare(TodoItem o1, TodoItem o2) {
@@ -192,7 +239,7 @@ public class Controller {
      * @Param keyEvent accepts the key event
      */
     @FXML
-    public void handleKeyPressed(KeyEvent keyEvent) {
+    public void handleKeyPressed(KeyEvent keyEvent) throws SQLException {
         TodoItem selectedItem = todoListView.getSelectionModel().getSelectedItem();
         // Checking if the item is get selected
         if (selectedItem != null) {
@@ -207,7 +254,7 @@ public class Controller {
     /**
      * Method to delete the selected item
      */
-    public void deleteItem(TodoItem item) {
+    public void deleteItem(TodoItem item) throws SQLException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Delete Todo Item");
         alert.setHeaderText("Delete item: " + item.getTitle());
@@ -215,12 +262,49 @@ public class Controller {
         Optional<ButtonType> result = alert.showAndWait();
 
         if (result.isPresent() && (result.get() == ButtonType.OK)) {
-            TodoData.getInstance().deleteTodoItem(item);
+            String sql = "delete from taskstack.todo where title = " + "'" + item.getTitle() + "'";
+            MysqlConnect.mysqlDelete(sql);
+            TodoData.getInstance().displayTodoItem();
         }
     }
 
-    public void handleFilterButton() {
+    /**
+     * Method to edit selected item
+     */
+    public void editItem(TodoItem item) {
+        showNewItemDialog();
+    }
 
+    /**
+     * Method to handle the filter button on main window
+     */
+    @FXML
+    public void handleFilterButton() {
+        TodoItem selectedItem = todoListView.getSelectionModel().getSelectedItem();
+        if (filterToggleButton.isSelected()) {
+            // If the deadline for todoItem is today then the todoItem is displayed once button is selected
+            filteredList.setPredicate(wantTodaysItems);
+            if (filteredList.isEmpty()) {
+                itemDetailsTextArea.clear();
+                deadLineLabel.setText("");
+            } else if (filteredList.contains(selectedItem)) {
+                todoListView.getSelectionModel().select(selectedItem);
+            } else {
+                todoListView.getSelectionModel().selectFirst();
+            }
+        } else {
+            // If the button is not selected then showing all the items
+            filteredList.setPredicate(wantAllItems);
+            todoListView.getSelectionModel().select(selectedItem);
+        }
+    }
+
+    /**
+     * Event handler for exit option in file menu
+     */
+    @FXML
+    public void handleExit() {
+        Platform.exit();
     }
 }
 

@@ -4,22 +4,21 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <BorderPane fx:id="mainBorderPane" fx:controller="com.cankush.todolist.Controller"
-            xmlns:fx="http://javafx.com/fxml">
+            xmlns:fx="http://javafx.com/fxml"
+            stylesheets="@style.css">
     <!-- Adding a Menu bar for our application-->
     <top>
         <VBox>
             <MenuBar>
                 <Menu text="File">
-                    <items>
-                        <MenuItem text="New..." onAction="#showNewItemDialog"/>
-    <!--                    <SeparatorMenuItem/> &lt;!&ndash; Adding the separating line between the two menu items&ndash;&gt;-->
-                        <MenuItem text="Exit"/>
-                    </items>
+                    <MenuItem text="New..." onAction="#showNewItemDialog"/>
+                    <!--                    <SeparatorMenuItem/> &lt;!&ndash; Adding the separating line between the two menu items&ndash;&gt;-->
+                    <MenuItem text="Exit" onAction="#handleExit"/>
                 </Menu>
             </MenuBar>
             <ToolBar>
                 <HBox>
-                    <Button onAction="#showNewItemDialog">
+                    <Button onAction="#showNewItemDialog" id="newItemButton">
                         <!-- tooltip displays the description of the item when hovered on it-->
                         <tooltip>
                             <Tooltip text="Add new Todo Item"/>
@@ -30,14 +29,11 @@
                             </ImageView>
                         </graphic>
                     </Button>
-<<<<<<< HEAD
-                    <ToggleButton fx:id="filterToggleButton" text="Today's Items" onAction="#handleFilterButton">
+                    <ToggleButton fx:id="filterToggleButton" id="filterButton" text="Today's Items" onAction="#handleFilterButton">
                         <tooltip>
                             <Tooltip text="Button Down: Show today's items only. Button Up: Show all items"/>
                         </tooltip>
                     </ToggleButton>
-=======
->>>>>>> 5e6314cb8c48209cb76b93fa05f19042456f41c7
                 </HBox>
             </ToolBar>
         </VBox>
@@ -53,7 +49,7 @@
     <!-- We have to use all the remaining space if the window. So, we are adding the center tag-->
     <center>
         <VBox style="-fx-background-color: white">
-            <TextArea fx:id="itemDetailsTextArea" VBox.vgrow="ALWAYS" wrapText="true"/> <!-- VBox.vgrow tells the VBox to always give room as much as
+            <TextArea fx:id="itemDetailsTextArea" VBox.vgrow="ALWAYS" wrapText="true" editable="false"/> <!-- VBox.vgrow tells the VBox to always give room as much as
                             possible to the TextArea. It give as much as possible space to the TextArea and minimum space to the
                             its child that is, in this case HBox which display Due date--><!-- wrapText will add the text to the new
                             line when the current line of the box size is full-->
