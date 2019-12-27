@@ -7,8 +7,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
 public class Main extends Application {
 
     @Override
@@ -27,12 +25,13 @@ public class Main extends Application {
 
     @Override
     public void stop() throws Exception {
-        try {
-            // Storing the items to the file/database
-            TodoData.getInstance().storeTodoItems();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+//        try {
+//            // Storing the items to the file/database
+////            TodoData.getInstance().storeTodoItems();
+//            TodoData.getInstance().addNewItem();
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
     }
 
     // Every time the application starts this will load the list of todoItems
@@ -40,8 +39,9 @@ public class Main extends Application {
     public void init() throws Exception {
         try {
             // Loading the items from the file/database at the starting of the application
-            TodoData.getInstance().loadTodoItems();
-        } catch (IOException e) {
+//            TodoData.getInstance().loadTodoItems();
+        TodoData.getInstance().displayTodoItem();
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }

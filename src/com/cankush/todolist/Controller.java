@@ -1,5 +1,6 @@
 package com.cankush.todolist;
 
+import com.cankush.todolist.database.MysqlConnect;
 import com.cankush.todolist.datamodel.TodoData;
 import com.cankush.todolist.datamodel.TodoItem;
 import javafx.application.Platform;
@@ -19,6 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
@@ -55,17 +57,32 @@ public class Controller {
         // initializing context menu list
         listContextMenu = new ContextMenu();
         MenuItem deleteMenuItem = new MenuItem("Delete");
+        // Adding menu to edit the todoItem
+        MenuItem editMenuItem = new MenuItem("Edit");
         // Code for deleting the selected item
         deleteMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 TodoItem item = todoListView.getSelectionModel().getSelectedItem();
-                deleteItem(item);
+                try {
+                    deleteItem(item);
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        });
+        // Code for editing the selected item
+        editMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                TodoItem item = todoListView.getSelectionModel().getSelectedItem();
+                editItem(item);
             }
         });
         // Adding delete option to the context menu
         listContextMenu.getItems().addAll(deleteMenuItem);
-
+        // Adding edit option to the context menu
+        listContextMenu.getItems().addAll(editMenuItem);
         // Adding change listener to select the item that is changed
         // Whenever the change is occur this will automatically trigger using change listener
         todoListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TodoItem>() {
@@ -222,7 +239,7 @@ public class Controller {
      * @Param keyEvent accepts the key event
      */
     @FXML
-    public void handleKeyPressed(KeyEvent keyEvent) {
+    public void handleKeyPressed(KeyEvent keyEvent) throws SQLException {
         TodoItem selectedItem = todoListView.getSelectionModel().getSelectedItem();
         // Checking if the item is get selected
         if (selectedItem != null) {
@@ -237,7 +254,7 @@ public class Controller {
     /**
      * Method to delete the selected item
      */
-    public void deleteItem(TodoItem item) {
+    public void deleteItem(TodoItem item) throws SQLException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Delete Todo Item");
         alert.setHeaderText("Delete item: " + item.getTitle());
@@ -245,8 +262,17 @@ public class Controller {
         Optional<ButtonType> result = alert.showAndWait();
 
         if (result.isPresent() && (result.get() == ButtonType.OK)) {
-            TodoData.getInstance().deleteTodoItem(item);
+            String sql = "delete from taskstack.todo where title = " + "'" + item.getTitle() + "'";
+            MysqlConnect.mysqlDelete(sql);
+            TodoData.getInstance().displayTodoItem();
         }
+    }
+
+    /**
+     * Method to edit selected item
+     */
+    public void editItem(TodoItem item) {
+        showNewItemDialog();
     }
 
     /**
