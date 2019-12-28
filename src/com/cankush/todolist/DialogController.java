@@ -35,4 +35,27 @@ public class DialogController {
         MysqlConnect.mysqlUpdate(sql);
         return newItem;
     }
+
+    public void preEditContent(TodoItem item) {
+        // Setting the data of the present item to the dialog
+        titleField.setText(item.getTitle());
+        detailsArea.setText(item.getDetails());
+        deadlinePicker.setValue(item.getDeadline());
+    }
+
+    public TodoItem processItemEdit() {
+        String title = titleField.getText().trim();
+        String details = detailsArea.getText().trim();
+        LocalDate deadlineValue = deadlinePicker.getValue();
+
+        String deadline = deadlineValue.toString();
+        TodoItem newItem = new TodoItem(title, details, deadlineValue);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Formatting the date
+        LocalDate date = LocalDate.parse(deadline, formatter);
+
+        // Adding newItem to the database/datafile
+        String sql = "update taskstack.todo set details = " + "'" + details + "'" + "," + "deadline = "  + "'" + date + "' where title = '" + title + "'";
+        MysqlConnect.mysqlUpdate(sql);
+        return newItem;
+    }
 }

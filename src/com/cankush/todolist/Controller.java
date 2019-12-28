@@ -42,6 +42,13 @@ public class Controller {
     private ContextMenu listContextMenu;
     @FXML
     private ToggleButton filterToggleButton;
+    @FXML
+    private TextField titleField;
+    @FXML
+    private TextArea detailsArea;
+    @FXML
+    private DatePicker deadlinePicker;
+
 
     // Adding filtered list to show the item by applying some criteria
     private FilteredList<TodoItem> filteredList;
@@ -221,6 +228,54 @@ public class Controller {
     }
 
     /**
+     * This showEditItemDialog() method will show the dialog to edit the existed item
+     */
+    @FXML
+    public void showEditItemDialog(TodoItem item) {
+        // Initializing Dialog of ButtonType
+        Dialog<ButtonType> dialog = new Dialog<>();
+        // Loading FXML here
+        dialog.initOwner(mainBorderPane.getScene().getWindow());
+        // Adding title for our dialog
+        dialog.setTitle("Add new Todo Item");
+        // Setting the header text for the dialog
+        dialog.setHeaderText("Use this dialog to create a new todo item");
+        // Initializing FXMLLoader
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        // Getting the FXML resource that loads the dialog pop up
+        fxmlLoader.setLocation(getClass().getResource("todoItemDialog.fxml"));
+        try {
+            // Setting the root i.e. todoItemDialog.fxml as a content for dialog by using fxmlLoader
+            dialog.getDialogPane().setContent(fxmlLoader.load());
+        } catch (IOException e) {
+            System.out.println("Couldn't load the dialog");
+            e.printStackTrace();
+            return;
+        }
+
+        // Executing DialogController
+        DialogController controller = fxmlLoader.getController();
+        // Adding the content of selected existing item to the edit dialog box
+        controller.preEditContent(item);
+
+        // Adding OK Button
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        // Adding CANCEL Button
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+
+        // Showing which button is pressed in the terminal
+        Optional<ButtonType> result = dialog.showAndWait();
+        // If result is present and the result contains data of ButtonType.OK the print ON pressed else CANCEL pressed
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            // Executing DialogController
+//            DialogController controller = fxmlLoader.getController();
+            TodoItem newItem = controller.processItemEdit();
+            // Selecting the newly added TodoItem as the entry made
+            todoListView.getSelectionModel().select(newItem);
+        }
+    }
+
+    /**
      * This handleClickListView code is replaced by Overriding the change method in the initialize function
      * As the generic event handler will trigger whenever the change is occurred
      */
@@ -272,7 +327,8 @@ public class Controller {
      * Method to edit selected item
      */
     public void editItem(TodoItem item) {
-        showNewItemDialog();
+        TodoItem item_ = item;
+        showEditItemDialog(item_);
     }
 
     /**
